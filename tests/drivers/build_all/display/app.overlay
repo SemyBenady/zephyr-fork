@@ -488,6 +488,15 @@
 				rotation = <0>;
 				pwms = <&test_pwm 0 PWM_MSEC(20) 0>;
 			};
+
+			test_mipi_dbi_ssd1683: ssd1683@28 {
+				compatible = "solomon,ssd1683";
+				reg = <0x28>;
+				mipi-max-frequency = <4000000>;
+				width = <300>;
+				height = <400>;
+				busy-gpios = <&test_gpio 0 0>;
+			};
 		};
 
 		test_mipi_dbi_xfr_16bit_write_only {
