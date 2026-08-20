@@ -1,0 +1,63 @@
+# Copyright (c) 2026 BayLibre SAS
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  TI DRV8912-Q1 automotive 12-channel half-bridge driver.
+
+  Every half-bridge is exposed as a GPIO pin, pin N driving the OUT(N+1) output
+  of the device. Logic 1 turns the high-side switch on, which ties the output to
+  the VM supply. Logic 0 turns the low-side switch on, which ties the output to
+  ground. GPIO_DISCONNECTED turns both switches off, which leaves the output
+  floating.
+
+  The outputs are floating after reset, so a load wired between an output and
+  either supply rail stays released until it is explicitly driven.
+
+  The half-bridges are push-pull only. Inputs, pull-ups, pull-downs, open-drain
+  and open-source configurations are rejected, as the device supports none of
+  them.
+
+compatible: "ti,drv8912-gpio"
+
+include: [spi-device.yaml, gpio-controller.yaml]
+
+properties:
+  "#gpio-cells":
+    const: 2
+
+  ngpios:
+    type: int
+    required: true
+    const: 12
+    description: Number of half-bridges of the device.
+
+  nsleep-gpios:
+    type: phandle-array
+    description: |
+      Driver enable pin. The device sits in low power sleep mode and ignores the
+      SPI bus while this pin is low. When the property is omitted the pin is
+      assumed to be tied high on the board.
+
+  nfault-gpios:
+    type: phandle-array
+    description: |
+      Fault indication pin. This is an open-drain output, asserted by the device
+      while at least one fault is latched, and it needs an external pull-up.
+
+  overvoltage-protection-millivolt:
+    type: int
+    default: 21000
+    enum:
+      - 21000
+      - 33000
+    description: |
+      Supply overvoltage protection threshold. The default matches the power on
+      reset value of the device.
+
+      A supply above 20 V requires the higher setting: the device otherwise
+      disables every half-bridge, stops its charge pump and asserts the fault
+      pin, all of which leaves the SPI bus working and the outputs dead.
+
+gpio-cells:
+  - pin
+  - flags
