@@ -1,0 +1,20 @@
+# Copyright (c) 2026 BayLibre SAS
+# SPDX-License-Identifier: Apache-2.0
+
+# DRV8912 GPIO configuration options
+
+menuconfig GPIO_DRV8912
+	bool "TI DRV8912-Q1 half-bridge driver"
+	default y
+	depends on DT_HAS_TI_DRV8912_GPIO_ENABLED && SPI
+	help
+	  Enable the TI DRV8912-Q1 automotive 12-channel half-bridge
+	  driver, exposing every half-bridge output as a GPIO pin.
+
+config GPIO_DRV8912_INIT_PRIORITY
+	int "Driver init priority"
+	default 99
+	depends on GPIO_DRV8912
+	help
+	  Device driver initialization priority. It must be greater than
+	  SPI_INIT_PRIORITY, as the device is on a SPI bus.
